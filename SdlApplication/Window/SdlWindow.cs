@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using SdlApplication.Limacon;
 using SDL2;
@@ -84,15 +85,91 @@ namespace SdlApplication.Window
         {
             SDL.SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
             SDL.SDL_RenderClear(_renderer);
-            SDL.SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 255);
 
             int width, height;
             SDL.SDL_GetWindowSize(_window, out width, out height);
 
             SDL.SDL_Point[] points = _limaconDrawer.Draw(width, height);
+
+            PaintLimacon(points, width, height);
+
+            SDL.SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 255);
             SDL.SDL_RenderDrawPoints(_renderer, points, points.Length);
 
             SDL.SDL_RenderPresent(_renderer);
+        }
+
+        private void PaintLimacon(SDL.SDL_Point[] points, int width, int height)
+        {
+            int centerX = width / 2;
+            int centerY = height / 2;
+            SDL.SDL_Point[] currentPoints;
+
+            // I Quater
+            currentPoints = points
+                .Where(p => p.x >= centerX && p.y >= centerY)
+                .ToArray();
+            PaintIOrIVQuater(currentPoints, centerY, 255, 255, 0);
+
+            // II Quater
+
+            currentPoints = points
+                .Where(p => p.x < centerX && p.y >= centerY)
+                .ToArray();
+            PaintIIOrIIIQuater(currentPoints, centerY, 255, 0, 0);
+
+            // III Quater
+
+            currentPoints = points
+                .Where(p => p.x < centerX && p.y < centerY)
+                .ToArray();
+            PaintIIOrIIIQuater(currentPoints, centerY, 0, 255, 0);
+
+            // IV Quater
+            currentPoints = points
+                .Where(p => p.x >= centerX && p.y < centerY)
+                .ToArray();
+            PaintIOrIVQuater(currentPoints, centerY, 0, 0, 255);
+        }
+
+        private void PaintIOrIVQuater(SDL.SDL_Point[] points, int centerY, byte r, byte g, byte b)
+        {
+            SDL.SDL_SetRenderDrawColor(_renderer, r, g, b, 255);
+            foreach (SDL.SDL_Point point in points)
+            {
+                SDL.SDL_RenderDrawLine(_renderer, point.x, point.y, point.x, centerY);
+            }
+        }
+
+        private void PaintIIOrIIIQuater(SDL.SDL_Point[] points, int centerY, byte r, byte g, byte b)
+        {
+            int[] xCoordinates = points
+                .Select(p => p.x)
+                .ToArray();
+
+            SDL.SDL_SetRenderDrawColor(_renderer, r, g, b, 255);
+            foreach (int xCoordinate in xCoordinates)
+            {
+                SDL.SDL_Point[] pointsWithSameX = points
+                    .Where(p => p.x == xCoordinate)
+                    .ToArray();
+
+                int maxY = pointsWithSameX
+                    .Select(p => p.y)
+                    .Max();
+                int minY = pointsWithSameX
+                    .Select(p => p.y)
+                    .Min();
+
+                if (Math.Abs(maxY - minY) < 10)
+                {
+                    SDL.SDL_RenderDrawLine(_renderer, xCoordinate, maxY, xCoordinate, centerY);
+                }
+                else
+                {
+                    SDL.SDL_RenderDrawLine(_renderer, xCoordinate, maxY, xCoordinate, minY);
+                }
+            }
         }
     }
 }
