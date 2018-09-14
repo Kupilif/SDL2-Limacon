@@ -22,7 +22,7 @@ namespace SdlApplication.Window
             _title = title;
             _screenHeight = screenHeight;
             _screenWidth = screenWidth;
-            _limaconDrawer = new Drawer(LimaconType.TypeA);
+            _limaconDrawer = new Drawer(LimaconType.TypeA, Math.PI / 6);
         }
 
         public void Open()
@@ -51,6 +51,7 @@ namespace SdlApplication.Window
             {
                 SDL.SDL_Event sdlEvent;
                 SDL.SDL_PollEvent(out sdlEvent);
+                
                 switch (sdlEvent.type)
                 {
                     case SDL.SDL_EventType.SDL_QUIT:
@@ -66,7 +67,13 @@ namespace SdlApplication.Window
                             case SDL.SDL_Keycode.SDLK_SPACE:
                                 _limaconDrawer.SwitchType();
                                 break;
-                        }
+                            case SDL.SDL_Keycode.SDLK_e:
+                                _limaconDrawer.RotateRight();
+                                break;
+                            case SDL.SDL_Keycode.SDLK_q:
+                                _limaconDrawer.RotateLeft();
+                                break;
+                            }
                         break;
                     }
                 }
