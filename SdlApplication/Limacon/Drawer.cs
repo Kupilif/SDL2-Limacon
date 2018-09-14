@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SDL2;
 
 namespace SdlApplication.Limacon
@@ -55,7 +56,9 @@ namespace SdlApplication.Limacon
                 points.Add(point);
             }
 
-            return points.ToArray();
+            return points
+                .Distinct()
+                .ToArray();
         }
     }
 }
