@@ -42,16 +42,16 @@ namespace SdlApplication.Limacon
             double a = bigRadius / (_aInBigRadiusCoefficient + _lInBigRadiusCoefficient * aToLCoefficient);
             double l = aToLCoefficient * a;
             
-            int centerXOffset = (int)(width / 2D - a / 2);
-            int centerYOffset = height / 2;
+            int centerX = width / 2;
+            int centerY = height / 2;
             var points = new List<SDL.SDL_Point>();
 
             for (double t = 0; t < 2 * Math.PI; t += _step)
             {
                 var point = new SDL.SDL_Point
                 {
-                    x = (int)Math.Round(a * Math.Pow(Math.Cos(t), 2) + l * Math.Cos(t)) + centerXOffset,
-                    y = (int)Math.Round(a * Math.Cos(t) * Math.Sin(t) + l * Math.Sin(t)) + centerYOffset
+                    x = (int)Math.Round(a * Math.Pow(Math.Cos(t), 2) + l * Math.Cos(t) - a / 2) + centerX,
+                    y = (int)Math.Round(a * Math.Cos(t) * Math.Sin(t) + l * Math.Sin(t)) + centerY
                 };
                 points.Add(point);
             }
